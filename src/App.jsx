@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
+import { useDebounce } from 'react-use';
 import Search from './components/Search'
 import Spinner from './components/Spinner';
+import MovieCard from './components/MovieCard';
 
 const App = () => {
   const API_URL = 'https://api.jikan.moe/v4';
@@ -9,16 +11,19 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [animeList, setAnimeList] = useState([]);
   const [isLoading, setisLoading] = useState(false);
+  const [debouncedSearchTerm, setdebouncedSearchTerm] = useState('');
 
-  const fetchTopAnimes = async () => {
+  useDebounce(() => setdebouncedSearchTerm(searchTerm.toLocaleLowerCase()), 750, [searchTerm]);
+
+  const fetchTopAnimes = async (query= '') => {
     setisLoading(true);
     setErrorMessage('');
 
     try {
-      const response = await fetch(`${API_URL}/top/anime`)
+      const response = query ? await fetch(`${API_URL}/anime?q=${encodeURIComponent(query)}`) : await fetch(`${API_URL}/top/anime`)
 
       if(!response.ok) {
-        throw new Error(`${error.status}, ${error.message}`)
+        throw new Error(`${response.status}, ${response.message}`)
       }
 
       const data = await response.json()
@@ -26,7 +31,7 @@ const App = () => {
       console.log(data);
 
       if(!data.data) {
-        setErrorMessage(`${error.message || 'Failed to fetch animes'}`);
+        setErrorMessage(`${response.message || 'Failed to fetch animes'}`);
         setAnimeList([]);
         return;
       }
@@ -41,8 +46,8 @@ const App = () => {
   };
 
   useEffect(() => {
-    fetchTopAnimes();
-  }, []);
+    fetchTopAnimes(debouncedSearchTerm);
+  }, [debouncedSearchTerm]);
 
   return (
     <main>
@@ -57,12 +62,12 @@ const App = () => {
         </header>
 
         <section className="all-movies">
-          <h2 className='mt-15'>Top Animes</h2>
+          <h2 className='mt-15'>All Animes</h2>
           
           {isLoading ? (<Spinner />) : errorMessage ? (<p className='text-red-500'>{errorMessage}</p>) : (
             <ul>
               {animeList.map((anime) => (
-                <p key={anime.mal_id} className='text-white'>{anime.title_english}</p>
+                <MovieCard key={anime.mal_id} anime={anime} />
               ))}
             </ul>
           )}
