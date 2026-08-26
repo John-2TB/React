@@ -2,7 +2,7 @@ import React from 'react'
 
 const MovieCard = ({ anime }) => {
   return (
-    <div className='movie-card'>
+    <div className='anime-card'>
       <img src={
         anime.images?.webp?.image_url ||
         anime.images?.jpg?.image_url ||

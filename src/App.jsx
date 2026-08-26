@@ -3,6 +3,7 @@ import { useDebounce } from 'react-use';
 import Search from './components/Search'
 import Spinner from './components/Spinner';
 import MovieCard from './components/MovieCard';
+import { updateSearchCount } from './appwrite';
 
 const App = () => {
   const API_URL = 'https://api.jikan.moe/v4';
@@ -37,6 +38,10 @@ const App = () => {
       }
 
       setAnimeList(data.data || []);
+
+      if(query && data.data.length > 0) {
+        await updateSearchCount(query, data.data[0]); 
+      }
     } catch (error) {
       console.error(`Error fetching animes: ${error}`);
       setErrorMessage('Error fetching data. Please try again later');
