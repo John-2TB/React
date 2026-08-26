@@ -54,5 +54,6 @@ export const getTrendingAnimes = async () => {
     return response.documents || [];
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }

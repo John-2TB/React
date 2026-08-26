@@ -4,9 +4,10 @@ import Search from './components/Search'
 import Spinner from './components/Spinner';
 import AnimeCard from './components/AnimeCard';
 import { getTrendingAnimes, updateSearchCount } from './appwrite';
+import Pagination from './components/Pagination';
 
 const App = () => {
-  const API_URL = 'https://api.jikan.moe/v4';
+  const API_URL = 'https://api.tenrai.org/v1';
 
   const [searchTerm, setSearchTerm] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -15,6 +16,9 @@ const App = () => {
   const [debouncedSearchTerm, setdebouncedSearchTerm] = useState('');
   const [trendingAnimes, settrendingAnimes] = useState([]);
   const [trendingAnimesErrorMessage, settrendingAnimesErrorMessage] = useState('');
+  const [isTrendingAnimesLoading, setisTrendingAnimesLoading] = useState(false);
+  const [page, setpage] = useState(1);
+  const [hasNextPage, sethasNextPage] = useState(false);
 
   useDebounce(() => setdebouncedSearchTerm(searchTerm.toLocaleLowerCase()), 750, [searchTerm]);
 
@@ -23,21 +27,24 @@ const App = () => {
     setErrorMessage('');
 
     try {
-      const response = query ? await fetch(`${API_URL}/anime?q=${encodeURIComponent(query)}`) : await fetch(`${API_URL}/top/anime`)
+      const response = query ? await fetch(`${API_URL}/anime?q=${encodeURIComponent(query)}&page=${page}`) : await fetch(`${API_URL}/top/anime?page=${page}`)
 
       if(!response.ok) {
+        if(response.status === 504) {
+          throw new Error('Jikan is temporarily unavailable. Please try again.')
+        }
         throw new Error(`HTTP Error Status: ${response.status}`)
       }
 
-      const data = await response.json()
-
-      console.log(data);
+      const data = await response.json();
 
       if(!data.data) {
         setErrorMessage(`${'Failed to fetch animes'}`);
         setAnimeList([]);
         return;
       }
+
+      sethasNextPage(data.pagination.has_next_page || false);
 
       setAnimeList(data.data || []);
 
@@ -46,22 +53,18 @@ const App = () => {
       }
     } catch (error) {
       console.error(`Error fetching animes: ${error}`);
-      setErrorMessage('Error fetching data. Please try again later');
+      setErrorMessage(`Error fetching data. Please try again later`);
     } finally {
       setisLoading(false);
     }
   };
 
   const loadTrendingMovies = async () => {
-    setisLoading(true);
+    setisTrendingAnimesLoading(true);
     settrendingAnimesErrorMessage('')
 
     try {
       const response = await getTrendingAnimes();
-
-      if(!response.ok) {
-        throw new Error(`HTTP Error Status: ${response.status}`)
-      }
 
       settrendingAnimes(Array.isArray(response) ? response : []);
 
@@ -70,12 +73,17 @@ const App = () => {
       settrendingAnimesErrorMessage('Error fetching trending animes. Please try again later.');
       
     } finally {
-      setisLoading(false)
+      setisTrendingAnimesLoading(false)
     }
   }
 
   useEffect(() => {
     fetchTopAnimes(debouncedSearchTerm);
+  }, [debouncedSearchTerm, page]);
+
+  // Reset pagination to 1 useEffect
+  useEffect(() => {
+    setpage(1)
   }, [debouncedSearchTerm]);
 
   // Trending Anime useEffect
@@ -101,12 +109,12 @@ const App = () => {
             <h2>Trending Animes</h2>
 
             <ul>
-              {trendingAnimes.map((anime, index) => {
+              {isTrendingAnimesLoading ? (<Spinner />) : trendingAnimes.map((anime, index) => (
                 <li key={anime.$id}>
                   <p>{index + 1}</p>
                   <img src={anime.poster_url} alt="" />
                 </li>
-              })}
+              ))}
             </ul>
           </section>
         ) : trendingAnimesErrorMessage ? (
@@ -116,11 +124,11 @@ const App = () => {
             <p className='text-red-500'>{trendingAnimesErrorMessage}</p>
           </section>
         ) : (
-          <scetion className="trending">
+          <section className="trending">
             <h2>Trending Animes</h2>
 
             <p>No trending animes</p>
-          </scetion>
+          </section>
         )}
 
         <section className="all-movies">
@@ -133,6 +141,8 @@ const App = () => {
               ))}
             </ul>
           )}
+
+          <Pagination page={page} hasNextPage={hasNextPage} setPage={setpage}/>
         </section>
       </div>
     </main>

@@ -10,7 +10,7 @@ const AnimeCard = ({ anime }) => {
         } alt={anime.title_english} />
 
       <div className="mt-4">
-        <h3 className="text-white">{anime.title_english}</h3>
+        <h3 className="text-white">{anime.title_english || anime.title}</h3>
 
         <div className="content">
           <div className="rating">

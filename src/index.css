@@ -141,6 +141,26 @@
       @apply text-gray-100 font-medium text-base;
     }
   }
+
+  .pagination{
+    @apply flex justify-center items-center mt-6;
+
+    & div{
+      @apply flex gap-8 justify-center items-center
+    }
+
+    & button{
+      @apply bg-dark-100 text-white p-2 rounded-xl text-lg shadow-inner shadow-light-100/10
+    }
+
+    & button:hover{
+      cursor: pointer
+    }
+
+    & span{
+      @apply text-xl font-bold text-white
+    }
+  }
 }
 
 @utility text-gradient {
