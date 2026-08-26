@@ -1,6 +1,6 @@
 import React from 'react'
 
-const MovieCard = ({ anime }) => {
+const AnimeCard = ({ anime }) => {
   return (
     <div className='anime-card'>
       <img src={
@@ -29,4 +29,4 @@ const MovieCard = ({ anime }) => {
   )
 }
 
-export default MovieCard
+export default AnimeCard

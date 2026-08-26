@@ -40,6 +40,19 @@ export const updateSearchCount = async (searchTerm, anime) => {
     }
 
   } catch (error) {
-    
+    console.error(error);
+  }
+}
+
+export const getTrendingAnimes = async () => {
+  try {
+    const response = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
+      Query.limit(5),
+      Query.orderDesc('count')
+    ])
+
+    return response.documents || [];
+  } catch (error) {
+    console.error(error);
   }
 }
