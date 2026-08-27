@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { X } from 'lucide-react'
 
 const AnimeModal = ({ anime, onSelect }) => {
   // console.log(anime)
@@ -22,7 +23,13 @@ const AnimeModal = ({ anime, onSelect }) => {
 
   return (
     <div className='modal'>
-      <span className='remove-modal' onClick={() => onSelect(null)}>X</span>
+      <button
+        className="remove-modal"
+        onClick={() => onSelect(null)}
+        aria-label="Close modal"
+      >
+        <X size={32} />
+      </button>
       <div className='anime-container'>
         
         {/* Title */}

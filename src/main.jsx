@@ -1,6 +1,5 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { AppwriteProvider } from '@appwrite.io/react'
 import './index.css'
 import App from './App.jsx'
 

@@ -167,7 +167,7 @@
    @apply w-full h-screen overflow-y-auto bg-primary/30 backdrop-blur-2xl fixed z-10 top-0 left-0 flex flex-col items-center;
 
    & .remove-modal{
-    @apply text-red-500 absolute right-0 text-3xl pr-4 cursor-pointer
+    @apply text-red-500 absolute top-8 lg:right-32 right-22 text-3xl pr-4 cursor-pointer
    }
 
    & .anime-container{
