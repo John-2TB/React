@@ -26,6 +26,7 @@
     font-optical-sizing: auto;
     background: #030014;
     overflow-x: hidden;
+    position: relative;
   }
 
   h1 {
@@ -103,7 +104,7 @@
   }
 
   .anime-card {
-    @apply bg-dark-100 p-5 rounded-2xl shadow-inner shadow-light-100/10 flex flex-col justify-between;
+    @apply bg-dark-100 p-5 rounded-2xl shadow-inner shadow-light-100/10 flex flex-col justify-between cursor-pointer;
 
     & img {
       @apply rounded-lg h-auto w-full;
@@ -160,6 +161,52 @@
     & span{
       @apply text-xl font-bold text-white
     }
+  }
+
+  .modal{
+   @apply w-full h-screen overflow-y-auto bg-primary/30 backdrop-blur-2xl fixed z-10 top-0 left-0 flex flex-col items-center;
+
+   & .remove-modal{
+    @apply text-red-500 absolute right-0 text-3xl pr-4 cursor-pointer
+   }
+
+   & .anime-container{
+    @apply flex flex-col shadow-lg shadow-light-200/50 bg-dark-100 rounded-2xl px-8 py-12 my-12 w-[85%] md:w-[65%] h-auto
+   }
+
+   & .media-display{
+    @apply grid grid-flow-col grid-cols-12 gap-2 items-stretch ;
+
+    & img{
+      @apply rounded-lg
+    }
+
+    & iframe{
+      @apply rounded-lg
+    }
+   }
+
+   & .anime-info{
+    @apply flex flex-col gap-5;
+
+    & .info-row{
+      @apply grid grid-cols-[120px_1fr] gap-6 items-start;
+    }
+
+    & div{
+      @apply flex items-start mt-4 gap-8;
+
+      & .title{
+        @apply text-lg text-light-200 bg-transparent
+      }
+
+      & p{
+        @apply text-lg text-white
+      }
+
+      
+    }
+   }
   }
 }
 

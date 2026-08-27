@@ -5,10 +5,15 @@ import Spinner from './components/Spinner';
 import AnimeCard from './components/AnimeCard';
 import { getTrendingAnimes, updateSearchCount } from './appwrite';
 import Pagination from './components/Pagination';
+import AnimeModal from './components/AnimeModal';
 
 const App = () => {
   const API_URL = 'https://api.tenrai.org/v1';
 
+
+  // ========================
+  // useState
+  // ========================
   const [searchTerm, setSearchTerm] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [animeList, setAnimeList] = useState([]);
@@ -19,9 +24,16 @@ const App = () => {
   const [isTrendingAnimesLoading, setisTrendingAnimesLoading] = useState(false);
   const [page, setpage] = useState(1);
   const [hasNextPage, sethasNextPage] = useState(false);
+  const [selectedAnime, setselectedAnime] = useState(null);
+
+
 
   useDebounce(() => setdebouncedSearchTerm(searchTerm.toLocaleLowerCase()), 750, [searchTerm]);
 
+
+  // ========================
+  // Functions
+  // ========================
   const fetchTopAnimes = async (query= '') => {
     setisLoading(true);
     setErrorMessage('');
@@ -77,6 +89,9 @@ const App = () => {
     }
   }
 
+  // ========================
+  // useEffects
+  // ========================
   useEffect(() => {
     fetchTopAnimes(debouncedSearchTerm);
   }, [debouncedSearchTerm, page]);
@@ -89,7 +104,12 @@ const App = () => {
   // Trending Anime useEffect
   useEffect(() => {
     loadTrendingMovies();
-  }, [])
+  }, []);
+
+  // Stop scrolling body
+  useEffect(() => {
+    {selectedAnime ? document.body.style.overflowY = 'hidden' : document.body.style.overflowY = ''}
+  }, [selectedAnime]);
   
 
   return (
@@ -104,43 +124,38 @@ const App = () => {
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
 
-        {trendingAnimes.length > 0 ? (
+        {trendingAnimes.length > 0 && (
           <section className='trending'>
             <h2>Trending Animes</h2>
 
             <ul>
-              {isTrendingAnimesLoading ? (<Spinner />) : trendingAnimes.map((anime, index) => (
+              {isTrendingAnimesLoading ? (<Spinner />) : trendingAnimesErrorMessage ? (<p className='text-red-500'>{trendingAnimesErrorMessage}</p>) : (
+                trendingAnimes.map((anime, index) => (
                 <li key={anime.$id}>
                   <p>{index + 1}</p>
-                  <img src={anime.poster_url} alt="" />
+                  <img src={anime.poster_url} alt="Image poster" />
                 </li>
-              ))}
+              ))
+              )}
             </ul>
           </section>
-        ) : trendingAnimesErrorMessage ? (
-          <section className="trending">
-            <h2>Trending Animes</h2>
+        )} 
 
-            <p className='text-red-500'>{trendingAnimesErrorMessage}</p>
-          </section>
-        ) : (
-          <section className="trending">
-            <h2>Trending Animes</h2>
 
-            <p>No trending animes</p>
-          </section>
-        )}
-
+        {/* All Animes Section */}
         <section className="all-movies">
           <h2 className='mt-15'>All Animes</h2>
           
           {isLoading ? (<Spinner />) : errorMessage ? (<p className='text-red-500'>{errorMessage}</p>) : (
             <ul>
               {animeList.map((anime) => (
-                <AnimeCard key={anime.mal_id} anime={anime} />
+                <AnimeCard key={anime.mal_id} anime={anime} onSelect={setselectedAnime}/>
+                
               ))}
             </ul>
           )}
+
+          {selectedAnime && (<AnimeModal anime={selectedAnime} onSelect={setselectedAnime}/>)}
 
           <Pagination page={page} hasNextPage={hasNextPage} setPage={setpage}/>
         </section>
