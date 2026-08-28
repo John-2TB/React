@@ -17,9 +17,7 @@ const AnimeModal = ({ anime, onSelect }) => {
     year: 'numeric'
   });
 
-  // useEffect(()=> {
-    
-  // }, [])
+  
 
   return (
     <div className='modal'>
@@ -58,7 +56,7 @@ const AnimeModal = ({ anime, onSelect }) => {
               anime.images.webp.image_url ? 
               (<img src={anime.images.webp.image_url} alt='Poster image' />) : 
               anime.images.jpg.image_url ? 
-              (<img src={anime.images.webp.image_url} alt='Poster image' />) : 
+              (<img src={anime.images.jpg.image_url} alt='Poster image' />) : 
               (<img src='no-poster.avif' alt='No image' />)
             }
           </div>

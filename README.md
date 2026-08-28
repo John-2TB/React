@@ -232,7 +232,7 @@ src/
 └── main.jsx
 │
 ├── public/
-│   ├── hero-image.png
+│   ├── hero-imag-avif
 │   ├── Rating.svg
 │   ├── no-poster.avif
 │   └── no-video.avif

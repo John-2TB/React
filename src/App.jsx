@@ -95,7 +95,7 @@ const App = () => {
   }
 
   // Safe AnimeList
-  const safeAnimeList = animeList.filter((anime) => !anime.genres?.some(genre => genre.mal_id === 9));
+  const safeAnimeList = animeList.filter((anime) => !anime.genres?.some(genre => genre.mal_id === 9 || genre.mal_id === 12));
 
   // ========================
   // useEffects
@@ -132,7 +132,7 @@ const App = () => {
       <div className="wrapper">
         <header>
           <img src="./logo.png" alt="Animepedia" className='mb-6'/>
-          <img src="./hero-image.png" alt="" />
+          <img src="./hero-image.avif" alt="" />
           <h1>Find <span className='text-gradient'>Animes</span> You'll Enjoy Without the Hassle</h1>
 
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
