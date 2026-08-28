@@ -6,6 +6,7 @@ import AnimeCard from './components/AnimeCard';
 import { getTrendingAnimes, updateSearchCount } from './appwrite';
 import Pagination from './components/Pagination';
 import AnimeModal from './components/AnimeModal';
+import Filter from './components/Filter';
 
 const App = () => {
   const API_URL = 'https://api.tenrai.org/v1';
@@ -25,6 +26,7 @@ const App = () => {
   const [page, setpage] = useState(1);
   const [hasNextPage, sethasNextPage] = useState(false);
   const [selectedAnime, setselectedAnime] = useState(null);
+  const [selectedGenre, setselectedGenre] = useState('');
 
 
 
@@ -39,7 +41,10 @@ const App = () => {
     setErrorMessage('');
 
     try {
-      const response = query ? await fetch(`${API_URL}/anime?q=${encodeURIComponent(query)}&page=${page}`) : await fetch(`${API_URL}/top/anime?page=${page}`)
+      const response = query ? 
+      await fetch(`${API_URL}/anime?q=${encodeURIComponent(query)}&page=${page}`) : selectedGenre ? 
+        await fetch(`${API_URL}/anime${selectedGenre ? `?genres=${selectedGenre}&page=${page}` : `?page=${page}`}`) :
+        await fetch(`${API_URL}/top/anime?page=${page}`)
 
       if(!response.ok) {
         if(response.status === 504) {
@@ -89,16 +94,24 @@ const App = () => {
     }
   }
 
+  // Safe AnimeList
+  const safeAnimeList = animeList.filter((anime) => !anime.genres?.some(genre => genre.mal_id === 9));
+
   // ========================
   // useEffects
   // ========================
   useEffect(() => {
     fetchTopAnimes(debouncedSearchTerm);
-  }, [debouncedSearchTerm, page]);
+  }, [debouncedSearchTerm, page, selectedGenre]);
 
   // Reset pagination to 1 useEffect
   useEffect(() => {
     setpage(1)
+  }, [debouncedSearchTerm, selectedGenre]);
+
+  // Reset selectedGenre to all when user start typing
+  useEffect(() => {
+    setselectedGenre('')
   }, [debouncedSearchTerm]);
 
   // Trending Anime useEffect
@@ -118,37 +131,47 @@ const App = () => {
 
       <div className="wrapper">
         <header>
+          <img src="./logo.png" alt="Animepedia" className='mb-6'/>
           <img src="./hero-image.png" alt="" />
           <h1>Find <span className='text-gradient'>Animes</span> You'll Enjoy Without the Hassle</h1>
 
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
 
-        {trendingAnimes.length > 0 && (
-          <section className='trending'>
-            <h2>Trending Animes</h2>
+        
+        <section className='trending'>
+          <h2>Trending Animes</h2>
 
-            <ul>
-              {isTrendingAnimesLoading ? (<Spinner />) : trendingAnimesErrorMessage ? (<p className='text-red-500'>{trendingAnimesErrorMessage}</p>) : (
-                trendingAnimes.map((anime, index) => (
-                <li key={anime.$id}>
-                  <p>{index + 1}</p>
-                  <img src={anime.poster_url} alt="Image poster" />
-                </li>
-              ))
-              )}
-            </ul>
-          </section>
-        )} 
+          <ul>
+            {isTrendingAnimesLoading ? (<Spinner />) : trendingAnimesErrorMessage ? (<p className='text-red-500 mt-10'>{trendingAnimesErrorMessage}</p>) : (
+              trendingAnimes.map((anime, index) => (
+              <li key={anime.$id}>
+                <p>{index + 1}</p>
+                <img src={anime.poster_url} alt="Image poster" />
+              </li>
+            ))
+            )}
+          </ul>
+        </section>
+    
 
 
         {/* All Animes Section */}
         <section className="all-movies">
           <h2 className='mt-15'>All Animes</h2>
+
+          {/* Filter */}
+          <Filter genres={setselectedGenre} animes={animeList} />
           
-          {isLoading ? (<Spinner />) : errorMessage ? (<p className='text-red-500'>{errorMessage}</p>) : (
+          {isLoading ? 
+          (<Spinner />) : 
+          errorMessage ? 
+          (<p className='text-red-500'>{errorMessage}</p>) : animeList.length === 0 ? (<p className='text-red-500'>No anime found. <span className='text-lg text-white'>But <b>JESUS</b> loves you.</span></p>) : 
+          safeAnimeList.length === 0 ? 
+          (<p className='text-red-500'>This site doesn't support these anime. <span className='text-lg text-white'><b>JESUS</b> loves you.</span></p>) : 
+          (
             <ul>
-              {animeList.map((anime) => (
+              {safeAnimeList.map((anime) => (
                 <AnimeCard key={anime.mal_id} anime={anime} onSelect={setselectedAnime}/>
                 
               ))}

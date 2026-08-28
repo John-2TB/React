@@ -17,7 +17,6 @@
 
   --breakpoint-xs: 480px;
 
-  --background-image-hero-pattern: url('/hero-bg.png');
 }
 
 @layer base {
@@ -52,11 +51,11 @@
 
 @layer components {
   .pattern {
-    @apply bg-hero-pattern w-screen h-screen bg-center bg-cover absolute z-0;
+    @apply w-screen h-screen bg-center bg-cover absolute z-0;
   }
 
   .wrapper {
-    @apply px-5 py-12 xs:p-10 max-w-7xl mx-auto flex flex-col relative z-10;
+    @apply px-5  xs:p-10 max-w-7xl mx-auto flex flex-col relative z-10;
   }
 
   .trending {
@@ -167,7 +166,7 @@
    @apply w-full h-screen overflow-y-auto bg-primary/30 backdrop-blur-2xl fixed z-10 top-0 left-0 flex flex-col items-center;
 
    & .remove-modal{
-    @apply text-red-500 absolute top-8 lg:right-32 right-22 text-3xl pr-4 cursor-pointer
+    @apply text-red-500 absolute top-8 sm:top-2 lg:right-32 sm:right-2 right-22 text-3xl pr-4 cursor-pointer
    }
 
    & .anime-container{
@@ -207,6 +206,23 @@
       
     }
    }
+  }
+
+  .filter{
+    @apply text-white flex flex-col justify-center gap-4;
+
+    & h3{
+      @apply text-lg text-xl font-bold
+    }
+
+    & div{
+      @apply overflow-x-auto flex hide-scrollbar gap-8;
+
+      & button{
+      @apply whitespace-nowrap bg-dark-100 shadow-inner shadow-light-100/10 px-4 py-1 rounded-lg cursor-pointer
+    }
+    }
+    
   }
 }
 
